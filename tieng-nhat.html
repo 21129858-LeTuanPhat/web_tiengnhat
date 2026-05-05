@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本語 — Học Tiếng Nhật</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --cream: #ede8db;
+    --red: #c0392b;
+    --red-soft: #e74c3c;
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --blue: #2c3e7a;
+    --blue-soft: #3d5a99;
+    --green: #27714e;
+    --green-soft: #2ecc71;
+    --shadow: rgba(26,26,46,0.15);
+    --border: rgba(26,26,46,0.12);
+    --radius: 14px;
+    --font-jp: 'Noto Sans JP', sans-serif;
+    --font-serif: 'Shippori Mincho', serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-jp);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(192,57,43,0.05) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(44,62,122,0.06) 0%, transparent 40%);
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .logo span { color: var(--paper); font-size: 0.9rem; font-family: var(--font-jp); margin-left: 8px; opacity: 0.7; }
+
+  /* NAV TABS */
+  nav {
+    display: flex;
+    gap: 6px;
+    background: var(--cream);
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    padding: 9px 20px;
+    border: 2px solid transparent;
+    border-radius: 30px;
+    font-family: var(--font-jp);
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink);
+    opacity: 0.5;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn:hover { opacity: 0.8; border-color: var(--border); }
+  .tab-btn.active {
+    background: var(--ink);
+    color: var(--gold);
+    opacity: 1;
+    border-color: var(--ink);
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 24px 20px; max-width: 900px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .jp { font-size: 1rem; color: var(--ink); opacity: 0.5; }
+  .section-sub { font-size: 0.85rem; color: var(--ink); opacity: 0.5; margin-bottom: 20px; }
+
+  /* ===== BẢNG CHỮ CÁI ===== */
+  .kana-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .kana-tab {
+    padding: 7px 22px;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .kana-tab.active { background: var(--ink); color: var(--paper); }
+
+  .kana-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+  }
+
+  .kana-cell {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+  .kana-cell:hover { transform: translateY(-2px); box-shadow: 0 6px 16px var(--shadow); }
+  .kana-cell .char { font-size: 1.6rem; font-family: var(--font-serif); display: block; color: var(--ink); }
+  .kana-cell .rom { font-size: 0.7rem; font-family: var(--font-mono); color: var(--red); margin-top: 3px; letter-spacing: 0.5px; }
+
+  /* ===== FLASHCARD ===== */
+  .flashcard-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .fc-type-btn {
+    padding: 7px 18px;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .fc-type-btn.active { background: var(--ink); color: var(--paper); }
+
+  .fc-progress {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink);
+    opacity: 0.5;
+    margin-left: auto;
+  }
+
+  .flashcard-scene {
+    width: 100%;
+    max-width: 360px;
+    height: 240px;
+    margin: 0 auto 28px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  .flashcard-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .flashcard-scene.flipped .flashcard-inner { transform: rotateY(180deg); }
+
+  .flashcard-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 40px var(--shadow);
+  }
+  .flashcard-front {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .flashcard-back {
+    background: white;
+    color: var(--ink);
+    transform: rotateY(180deg);
+    border: 2.5px solid var(--gold);
+  }
+  .flashcard-char { font-size: 5rem; font-family: var(--font-serif); line-height: 1; }
+  .flashcard-label { font-size: 0.75rem; opacity: 0.4; margin-top: 12px; letter-spacing: 1px; font-family: var(--font-mono); }
+  .flashcard-rom { font-size: 2.2rem; font-family: var(--font-mono); font-weight: 500; color: var(--red); }
+  .flashcard-hint { font-size: 0.75rem; opacity: 0.35; margin-top: 10px; font-family: var(--font-mono); }
+
+  .fc-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+  }
+  .fc-btn {
+    padding: 11px 28px;
+    border-radius: 10px;
+    border: 2px solid var(--ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.18s;
+    font-family: var(--font-jp);
+  }
+  .fc-btn:hover { background: var(--ink); color: var(--paper); }
+  .fc-btn.primary { background: var(--ink); color: var(--paper); }
+  .fc-btn.primary:hover { background: var(--blue); border-color: var(--blue); }
+
+  /* ===== QUIZ ===== */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .score-badge {
+    background: var(--ink);
+    color: var(--gold);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .streak-badge {
+    background: var(--red);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    display: none;
+  }
+  .streak-badge.show { display: inline; }
+
+  .quiz-question {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 18px;
+    padding: 36px 24px;
+    text-align: center;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 30px var(--shadow);
+  }
+  .quiz-q-char { font-size: 4.5rem; font-family: var(--font-serif); }
+  .quiz-q-label { font-size: 0.75rem; opacity: 0.4; margin-top: 8px; font-family: var(--font-mono); letter-spacing: 1px; }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .quiz-opt {
+    padding: 16px;
+    border: 2.5px solid var(--border);
+    border-radius: 12px;
+    background: white;
+    font-size: 1.3rem;
+    font-family: var(--font-serif);
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+    box-shadow: 0 3px 10px var(--shadow);
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow); }
+  .quiz-opt.correct { background: #d4f5e2; border-color: var(--green); color: var(--green); }
+  .quiz-opt.wrong { background: #fde8e8; border-color: var(--red); color: var(--red); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .quiz-feedback {
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 28px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .quiz-feedback.correct { color: var(--green); }
+  .quiz-feedback.wrong { color: var(--red); }
+
+  .quiz-type-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .qt-btn {
+    padding: 6px 16px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .qt-btn.active { background: var(--red); color: white; border-color: var(--red); }
+
+  /* ===== MATCHING ===== */
+  .match-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .match-timer {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--red);
+    background: white;
+    border: 2px solid var(--red);
+    padding: 5px 16px;
+    border-radius: 8px;
+  }
+  .match-score-info {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+  .match-start-btn {
+    padding: 10px 26px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-jp);
+  }
+  .match-start-btn:hover { background: var(--red-soft); transform: translateY(-1px); }
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 480px) {
+    .match-grid { grid-template-columns: repeat(3, 1fr); }
+    .quiz-options { grid-template-columns: 1fr; }
+    .kana-grid { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); }
+  }
+
+  .match-card {
+    aspect-ratio: 1;
+    border: 2.5px solid var(--border);
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 2px 8px var(--shadow);
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-card.romaji { font-family: var(--font-mono); font-size: 0.95rem; color: var(--red); }
+  .match-card:hover:not(.matched):not(.selected) { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 6px 18px var(--shadow); }
+  .match-card.selected { border-color: var(--blue); background: #eef2ff; transform: scale(1.04); }
+  .match-card.matched { background: #d4f5e2; border-color: var(--green); opacity: 0.7; cursor: default; }
+  .match-card.wrong-flash { animation: wrongFlash 0.4s; }
+  @keyframes wrongFlash {
+    0%,100% { background: white; }
+    50% { background: #fde8e8; border-color: var(--red); }
+  }
+
+  .match-result {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    border: 2px solid var(--gold);
+    display: none;
+    box-shadow: 0 6px 24px var(--shadow);
+  }
+  .match-result.show { display: block; }
+  .match-result .big { font-size: 2.5rem; font-family: var(--font-serif); color: var(--red); margin-bottom: 6px; }
+  .match-result .time-result { font-family: var(--font-mono); font-size: 1rem; color: var(--ink); opacity: 0.6; }
+
+  .difficulty-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .diff-btn {
+    padding: 6px 16px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .diff-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section.active { animation: fadeIn 0.3s ease; }
+
+  .confetti-emoji {
+    font-size: 2rem;
+    display: inline-block;
+    animation: pop 0.4s cubic-bezier(.36,.07,.19,.97);
+  }
+  @keyframes pop {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">日本語<span>Học Tiếng Nhật</span></div>
+</header>
+
+<nav>
+  <button class="tab-btn active" onclick="showSection('chart')">📋 Bảng Chữ Cái</button>
+  <button class="tab-btn" onclick="showSection('flashcard')">🃏 Flashcard</button>
+  <button class="tab-btn" onclick="showSection('quiz')">❓ Quiz</button>
+  <button class="tab-btn" onclick="showSection('match')">🔗 Matching</button>
+</nav>
+
+<!-- ===== BẢNG CHỮ CÁI ===== -->
+<div class="section active" id="sec-chart">
+  <div class="section-title">📋 Bảng Chữ Cái <span class="jp">ひらがな・カタカナ</span></div>
+  <div class="section-sub">Tổng hợp toàn bộ ký tự Hiragana và Katakana kèm cách đọc Romaji</div>
+  <div class="kana-tabs">
+    <button class="kana-tab active" onclick="showKana('hiragana',this)">ひらがな Hiragana</button>
+    <button class="kana-tab" onclick="showKana('katakana',this)">カタカナ Katakana</button>
+  </div>
+  <div class="kana-grid" id="kana-grid"></div>
+</div>
+
+<!-- ===== FLASHCARD ===== -->
+<div class="section" id="sec-flashcard">
+  <div class="section-title">🃏 Flashcard <span class="jp">フラッシュカード</span></div>
+  <div class="section-sub">Click vào thẻ để lật và xem cách đọc</div>
+  <div class="flashcard-controls">
+    <button class="fc-type-btn active" onclick="setFcType('hiragana',this)">ひらがな</button>
+    <button class="fc-type-btn" onclick="setFcType('katakana',this)">カタカナ</button>
+    <button class="fc-type-btn" onclick="setFcType('all',this)">Tất cả</button>
+    <button class="fc-btn" onclick="shuffleFlashcards()" style="padding:7px 16px;font-size:0.8rem;">🔀 Xáo bài</button>
+    <span class="fc-progress" id="fc-progress">0 / 0</span>
+  </div>
+  <div class="flashcard-scene" id="fc-scene" onclick="flipCard()">
+    <div class="flashcard-inner" id="fc-inner">
+      <div class="flashcard-face flashcard-front">
+        <span class="flashcard-char" id="fc-char">あ</span>
+        <span class="flashcard-label">CLICK ĐỂ LẬT</span>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <span class="flashcard-rom" id="fc-rom">a</span>
+        <span class="flashcard-hint" id="fc-type-hint">hiragana</span>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="fc-btn" onclick="prevCard()">← Trước</button>
+    <button class="fc-btn primary" onclick="nextCard()">Tiếp →</button>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="section" id="sec-quiz">
+  <div class="section-title">❓ Quiz <span class="jp">クイズ</span></div>
+  <div class="section-sub">Chọn đáp án đúng trong 4 lựa chọn</div>
+  <div class="quiz-type-row">
+    <button class="qt-btn active" onclick="setQuizType('hiragana',this)">ひらがな</button>
+    <button class="qt-btn" onclick="setQuizType('katakana',this)">カタカナ</button>
+    <button class="qt-btn" onclick="setQuizType('all',this)">Tất cả</button>
+    <button class="qt-btn" onclick="setQuizMode('char2rom',this)" id="qm-c2r" style="margin-left:8px;border-color:var(--blue);color:var(--blue)" class="active">Chữ → Rom</button>
+    <button class="qt-btn" onclick="setQuizMode('rom2char',this)" id="qm-r2c">Rom → Chữ</button>
+  </div>
+  <div class="quiz-header">
+    <span class="score-badge" id="quiz-score">✓ 0 &nbsp; ✗ 0</span>
+    <span class="streak-badge" id="streak-badge">🔥 Streak x0</span>
+  </div>
+  <div class="quiz-question">
+    <div class="quiz-q-char" id="quiz-q">あ</div>
+    <div class="quiz-q-label" id="quiz-q-label">Chọn cách đọc đúng</div>
+  </div>
+  <div class="quiz-options" id="quiz-opts"></div>
+  <div class="quiz-feedback" id="quiz-fb"></div>
+</div>
+
+<!-- ===== MATCHING ===== -->
+<div class="section" id="sec-match">
+  <div class="section-title">🔗 Matching Game <span class="jp">マッチングゲーム</span></div>
+  <div class="section-sub">Ghép ký tự với cách đọc Romaji tương ứng</div>
+  <div class="difficulty-row">
+    <button class="diff-btn active" onclick="setDiff(6,this)">Dễ (6 cặp)</button>
+    <button class="diff-btn" onclick="setDiff(8,this)">Bình thường (8 cặp)</button>
+    <button class="diff-btn" onclick="setDiff(12,this)">Khó (12 cặp)</button>
+  </div>
+  <div class="match-controls">
+    <div>
+      <select id="match-type" style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-jp);font-size:0.85rem;background:white;cursor:pointer;">
+        <option value="hiragana">ひらがな</option>
+        <option value="katakana">カタカナ</option>
+        <option value="all">Tất cả</option>
+      </select>
+    </div>
+    <div class="match-timer" id="match-timer">00:00</div>
+    <div class="match-score-info" id="match-pairs">0 / 0 cặp</div>
+    <button class="match-start-btn" onclick="startMatch()">▶ Bắt đầu</button>
+  </div>
+  <div class="match-grid" id="match-grid"></div>
+  <div class="match-result" id="match-result">
+    <div class="big" id="match-result-emoji">🎉</div>
+    <div style="font-size:1.2rem;font-weight:700;margin-bottom:4px;" id="match-result-msg">Hoàn thành!</div>
+    <div class="time-result" id="match-result-time"></div>
+    <button class="match-start-btn" onclick="startMatch()" style="margin-top:14px;">🔄 Chơi lại</button>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  hiragana: [{"char":"あ","romaji":"a"},{"char":"い","romaji":"i"},{"char":"う","romaji":"u"},{"char":"え","romaji":"e"},{"char":"お","romaji":"o"},{"char":"か","romaji":"ka"},{"char":"き","romaji":"ki"},{"char":"く","romaji":"ku"},{"char":"け","romaji":"ke"},{"char":"こ","romaji":"ko"},{"char":"が","romaji":"ga"},{"char":"ぎ","romaji":"gi"},{"char":"ぐ","romaji":"gu"},{"char":"げ","romaji":"ge"},{"char":"ご","romaji":"go"},{"char":"さ","romaji":"sa"},{"char":"し","romaji":"shi"},{"char":"す","romaji":"su"},{"char":"せ","romaji":"se"},{"char":"そ","romaji":"so"},{"char":"ざ","romaji":"za"},{"char":"じ","romaji":"ji"},{"char":"ず","romaji":"zu"},{"char":"ぜ","romaji":"ze"},{"char":"ぞ","romaji":"zo"},{"char":"た","romaji":"ta"},{"char":"ち","romaji":"chi"},{"char":"つ","romaji":"tsu"},{"char":"て","romaji":"te"},{"char":"と","romaji":"to"},{"char":"だ","romaji":"da"},{"char":"ぢ","romaji":"ji"},{"char":"づ","romaji":"zu"},{"char":"で","romaji":"de"},{"char":"ど","romaji":"do"},{"char":"な","romaji":"na"},{"char":"に","romaji":"ni"},{"char":"ぬ","romaji":"nu"},{"char":"ね","romaji":"ne"},{"char":"の","romaji":"no"},{"char":"は","romaji":"ha"},{"char":"ひ","romaji":"hi"},{"char":"ふ","romaji":"fu"},{"char":"へ","romaji":"he"},{"char":"ほ","romaji":"ho"},{"char":"ば","romaji":"ba"},{"char":"び","romaji":"bi"},{"char":"ぶ","romaji":"bu"},{"char":"べ","romaji":"be"},{"char":"ぼ","romaji":"bo"},{"char":"ぱ","romaji":"pa"},{"char":"ぴ","romaji":"pi"},{"char":"ぷ","romaji":"pu"},{"char":"ぺ","romaji":"pe"},{"char":"ぽ","romaji":"po"},{"char":"ま","romaji":"ma"},{"char":"み","romaji":"mi"},{"char":"む","romaji":"mu"},{"char":"め","romaji":"me"},{"char":"も","romaji":"mo"},{"char":"や","romaji":"ya"},{"char":"ゆ","romaji":"yu"},{"char":"よ","romaji":"yo"},{"char":"ら","romaji":"ra"},{"char":"り","romaji":"ri"},{"char":"る","romaji":"ru"},{"char":"れ","romaji":"re"},{"char":"ろ","romaji":"ro"},{"char":"わ","romaji":"wa"},{"char":"を","romaji":"wo"},{"char":"ん","romaji":"n"},{"char":"きゃ","romaji":"kya"},{"char":"きゅ","romaji":"kyu"},{"char":"きょ","romaji":"kyo"},{"char":"しゃ","romaji":"sha"},{"char":"しゅ","romaji":"shu"},{"char":"しょ","romaji":"sho"},{"char":"ちゃ","romaji":"cha"},{"char":"ちゅ","romaji":"chu"},{"char":"ちょ","romaji":"cho"},{"char":"にゃ","romaji":"nya"},{"char":"にゅ","romaji":"nyu"},{"char":"にょ","romaji":"nyo"},{"char":"ひゃ","romaji":"hya"},{"char":"ひゅ","romaji":"hyu"},{"char":"ひょ","romaji":"hyo"},{"char":"みゃ","romaji":"mya"},{"char":"みゅ","romaji":"myu"},{"char":"みょ","romaji":"myo"},{"char":"りゃ","romaji":"rya"},{"char":"りゅ","romaji":"ryu"},{"char":"りょ","romaji":"ryo"}],
+  katakana: [{"char":"ア","romaji":"a"},{"char":"イ","romaji":"i"},{"char":"ウ","romaji":"u"},{"char":"エ","romaji":"e"},{"char":"オ","romaji":"o"},{"char":"カ","romaji":"ka"},{"char":"キ","romaji":"ki"},{"char":"ク","romaji":"ku"},{"char":"ケ","romaji":"ke"},{"char":"コ","romaji":"ko"},{"char":"ガ","romaji":"ga"},{"char":"ギ","romaji":"gi"},{"char":"グ","romaji":"gu"},{"char":"ゲ","romaji":"ge"},{"char":"ゴ","romaji":"go"},{"char":"サ","romaji":"sa"},{"char":"シ","romaji":"shi"},{"char":"ス","romaji":"su"},{"char":"セ","romaji":"se"},{"char":"ソ","romaji":"so"},{"char":"ザ","romaji":"za"},{"char":"ジ","romaji":"ji"},{"char":"ズ","romaji":"zu"},{"char":"ゼ","romaji":"ze"},{"char":"ゾ","romaji":"zo"},{"char":"タ","romaji":"ta"},{"char":"チ","romaji":"chi"},{"char":"ツ","romaji":"tsu"},{"char":"テ","romaji":"te"},{"char":"ト","romaji":"to"},{"char":"ダ","romaji":"da"},{"char":"ヂ","romaji":"ji"},{"char":"ヅ","romaji":"zu"},{"char":"デ","romaji":"de"},{"char":"ド","romaji":"do"},{"char":"ナ","romaji":"na"},{"char":"ニ","romaji":"ni"},{"char":"ヌ","romaji":"nu"},{"char":"ネ","romaji":"ne"},{"char":"ノ","romaji":"no"},{"char":"ハ","romaji":"ha"},{"char":"ヒ","romaji":"hi"},{"char":"フ","romaji":"fu"},{"char":"ヘ","romaji":"he"},{"char":"ホ","romaji":"ho"},{"char":"バ","romaji":"ba"},{"char":"ビ","romaji":"bi"},{"char":"ブ","romaji":"bu"},{"char":"ベ","romaji":"be"},{"char":"ボ","romaji":"bo"},{"char":"パ","romaji":"pa"},{"char":"ピ","romaji":"pi"},{"char":"プ","romaji":"pu"},{"char":"ペ","romaji":"pe"},{"char":"ポ","romaji":"po"},{"char":"マ","romaji":"ma"},{"char":"ミ","romaji":"mi"},{"char":"ム","romaji":"mu"},{"char":"メ","romaji":"me"},{"char":"モ","romaji":"mo"},{"char":"ヤ","romaji":"ya"},{"char":"ユ","romaji":"yu"},{"char":"ヨ","romaji":"yo"},{"char":"ラ","romaji":"ra"},{"char":"リ","romaji":"ri"},{"char":"ル","romaji":"ru"},{"char":"レ","romaji":"re"},{"char":"ロ","romaji":"ro"},{"char":"ワ","romaji":"wa"},{"char":"ヲ","romaji":"wo"},{"char":"ン","romaji":"n"},{"char":"キャ","romaji":"kya"},{"char":"キュ","romaji":"kyu"},{"char":"キョ","romaji":"kyo"},{"char":"シャ","romaji":"sha"},{"char":"シュ","romaji":"shu"},{"char":"ショ","romaji":"sho"},{"char":"チャ","romaji":"cha"},{"char":"チュ","romaji":"chu"},{"char":"チョ","romaji":"cho"},{"char":"ニャ","romaji":"nya"},{"char":"ニュ","romaji":"nyu"},{"char":"ニョ","romaji":"nyo"},{"char":"ヒャ","romaji":"hya"},{"char":"ヒュ","romaji":"hyu"},{"char":"ヒョ","romaji":"hyo"},{"char":"ミャ","romaji":"mya"},{"char":"ミュ","romaji":"myu"},{"char":"ミョ","romaji":"myo"},{"char":"リャ","romaji":"rya"},{"char":"リュ","romaji":"ryu"},{"char":"リョ","romaji":"ryo"}]
+};
+
+function getPool(type) {
+  if (type === 'all') return [...DATA.hiragana, ...DATA.katakana];
+  return DATA[type];
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== BẢNG CHỮ CÁI =====
+let currentKanaType = 'hiragana';
+function showKana(type, btn) {
+  currentKanaType = type;
+  document.querySelectorAll('.kana-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderKanaGrid();
+}
+function renderKanaGrid() {
+  const grid = document.getElementById('kana-grid');
+  grid.innerHTML = DATA[currentKanaType].map(k =>
+    `<div class="kana-cell"><span class="char">${k.char}</span><span class="rom">${k.romaji}</span></div>`
+  ).join('');
+}
+
+// ===== FLASHCARD =====
+let fcPool = [], fcIndex = 0, fcFlipped = false, fcType = 'hiragana';
+function setFcType(type, btn) {
+  document.querySelectorAll('.fc-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  fcType = type;
+  initFlashcards();
+}
+function initFlashcards() {
+  fcPool = shuffle(getPool(fcType));
+  fcIndex = 0;
+  renderCard();
+}
+function shuffleFlashcards() { fcPool = shuffle(fcPool); fcIndex = 0; renderCard(); }
+function renderCard() {
+  const card = fcPool[fcIndex];
+  document.getElementById('fc-char').textContent = card.char;
+  document.getElementById('fc-rom').textContent = card.romaji;
+  document.getElementById('fc-type-hint').textContent = DATA.hiragana.find(c => c.char === card.char) ? 'hiragana' : 'katakana';
+  document.getElementById('fc-progress').textContent = `${fcIndex + 1} / ${fcPool.length}`;
+  const scene = document.getElementById('fc-scene');
+  scene.classList.remove('flipped');
+  fcFlipped = false;
+}
+function flipCard() {
+  document.getElementById('fc-scene').classList.toggle('flipped');
+  fcFlipped = !fcFlipped;
+}
+function nextCard() {
+  fcIndex = (fcIndex + 1) % fcPool.length;
+  renderCard();
+}
+function prevCard() {
+  fcIndex = (fcIndex - 1 + fcPool.length) % fcPool.length;
+  renderCard();
+}
+
+// ===== QUIZ =====
+let quizPool = [], quizIdx = 0, quizScore = {ok:0, bad:0}, quizStreak = 0;
+let quizType = 'hiragana', quizMode = 'char2rom', quizLocked = false;
+
+function setQuizType(type, btn) {
+  document.querySelectorAll('.qt-btn').forEach(b => { if(['hiragana','katakana','all'].some(t => b.onclick.toString().includes(`'${t}'`))) b.classList.remove('active'); });
+  btn.classList.add('active');
+  quizType = type;
+  quizScore = {ok:0, bad:0}; quizStreak = 0;
+  initQuiz();
+}
+function setQuizMode(mode, btn) {
+  document.getElementById('qm-c2r').classList.remove('active');
+  document.getElementById('qm-r2c').classList.remove('active');
+  btn.classList.add('active');
+  quizMode = mode;
+  initQuiz();
+}
+function initQuiz() {
+  quizPool = shuffle(getPool(quizType));
+  quizIdx = 0;
+  renderQuiz();
+  updateQuizScore();
+}
+function renderQuiz() {
+  quizLocked = false;
+  const pool = getPool(quizType);
+  const q = quizPool[quizIdx % quizPool.length];
+  const isC2R = quizMode === 'char2rom';
+
+  document.getElementById('quiz-q').textContent = isC2R ? q.char : q.romaji;
+  document.getElementById('quiz-q-label').textContent = isC2R ? 'Chọn cách đọc đúng' : 'Chọn ký tự đúng';
+  document.getElementById('quiz-fb').textContent = '';
+  document.getElementById('quiz-fb').className = 'quiz-feedback';
+
+  // 4 options: 1 correct + 3 wrong
+  let wrongs = shuffle(pool.filter(x => x.romaji !== q.romaji)).slice(0, 3);
+  let opts = shuffle([q, ...wrongs]);
+
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = opts.map((o, i) => {
+    const val = isC2R ? o.romaji : o.char;
+    return `<button class="quiz-opt" onclick="checkQuiz(this,'${o.romaji}','${q.romaji}')">${val}</button>`;
+  }).join('');
+}
+function checkQuiz(btn, selected, correct) {
+  if (quizLocked) return;
+  quizLocked = true;
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('quiz-fb');
+  if (selected === correct) {
+    btn.classList.add('correct');
+    quizScore.ok++;
+    quizStreak++;
+    fb.textContent = '✓ Chính xác! ' + (quizStreak >= 3 ? `🔥 ${quizStreak} liên tiếp!` : '');
+    fb.className = 'quiz-feedback correct';
+    const sb = document.getElementById('streak-badge');
+    if (quizStreak >= 2) { sb.textContent = `🔥 Streak x${quizStreak}`; sb.classList.add('show'); }
+  } else {
+    btn.classList.add('wrong');
+    quizScore.bad++;
+    quizStreak = 0;
+    document.getElementById('streak-badge').classList.remove('show');
+    // highlight correct
+    opts.forEach(b => {
+      // find and highlight correct
+      const isC2R = quizMode === 'char2rom';
+      const pool = getPool(quizType);
+      if (isC2R && b.textContent === correct) b.classList.add('correct');
+      if (!isC2R) {
+        const q = quizPool[quizIdx % quizPool.length];
+        const correctChar = pool.find(x => x.romaji === q.romaji);
+        if (correctChar && b.textContent === correctChar.char) b.classList.add('correct');
+      }
+    });
+    fb.textContent = `✗ Sai rồi! Đáp án: ${correct}`;
+    fb.className = 'quiz-feedback wrong';
+  }
+  updateQuizScore();
+  quizIdx++;
+  setTimeout(() => renderQuiz(), 1200);
+}
+function updateQuizScore() {
+  document.getElementById('quiz-score').innerHTML = `✓ ${quizScore.ok} &nbsp; ✗ ${quizScore.bad}`;
+}
+
+// ===== MATCHING =====
+let matchPairs = 6, matchType = 'hiragana';
+let matchSelected = null, matchMatched = 0, matchTotal = 0;
+let matchTimer = null, matchSeconds = 0, matchStarted = false;
+
+function setDiff(n, btn) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  matchPairs = n;
+}
+
+function startMatch() {
+  clearInterval(matchTimer);
+  matchSeconds = 0;
+  matchStarted = false;
+  matchSelected = null;
+  matchMatched = 0;
+  document.getElementById('match-result').classList.remove('show');
+  document.getElementById('match-timer').textContent = '00:00';
+
+  const type = document.getElementById('match-type').value;
+  const pool = shuffle(getPool(type)).slice(0, matchPairs);
+  matchTotal = matchPairs;
+  document.getElementById('match-pairs').textContent = `0 / ${matchTotal} cặp`;
+
+  // Build cards: kana + romaji, shuffled
+  const cards = [];
+  pool.forEach((item, i) => {
+    cards.push({ id: i, type: 'kana', char: item.char, romaji: item.romaji });
+    cards.push({ id: i, type: 'romaji', char: item.char, romaji: item.romaji });
+  });
+  const shuffled = shuffle(cards);
+
+  const cols = matchPairs <= 6 ? 4 : matchPairs <= 8 ? 4 : 6;
+  const grid = document.getElementById('match-grid');
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.innerHTML = shuffled.map((c, idx) => {
+    const display = c.type === 'kana' ? c.char : c.romaji;
+    const cls = c.type === 'romaji' ? 'match-card romaji' : 'match-card';
+    return `<div class="${cls}" data-id="${c.id}" data-type="${c.type}" data-idx="${idx}" onclick="clickMatch(this)">${display}</div>`;
+  }).join('');
+
+  // Start timer on first click — handled in clickMatch
+  matchStarted = false;
+}
+
+function clickMatch(el) {
+  if (el.classList.contains('matched')) return;
+  if (!matchStarted) {
+    matchStarted = true;
+    matchTimer = setInterval(() => {
+      matchSeconds++;
+      const m = String(Math.floor(matchSeconds/60)).padStart(2,'0');
+      const s = String(matchSeconds%60).padStart(2,'0');
+      document.getElementById('match-timer').textContent = `${m}:${s}`;
+    }, 1000);
+  }
+
+  if (matchSelected === el) { el.classList.remove('selected'); matchSelected = null; return; }
+
+  el.classList.add('selected');
+  if (!matchSelected) { matchSelected = el; return; }
+
+  const a = matchSelected, b = el;
+  const sameId = a.dataset.id === b.dataset.id;
+  const diffType = a.dataset.type !== b.dataset.type;
+
+  if (sameId && diffType) {
+    a.classList.remove('selected'); b.classList.remove('selected');
+    a.classList.add('matched'); b.classList.add('matched');
+    matchMatched++;
+    document.getElementById('match-pairs').textContent = `${matchMatched} / ${matchTotal} cặp`;
+    matchSelected = null;
+    if (matchMatched === matchTotal) {
+      clearInterval(matchTimer);
+      const m = String(Math.floor(matchSeconds/60)).padStart(2,'0');
+      const s = String(matchSeconds%60).padStart(2,'0');
+      const res = document.getElementById('match-result');
+      document.getElementById('match-result-emoji').innerHTML = '<span class="confetti-emoji">🎉</span>';
+      document.getElementById('match-result-msg').textContent = matchSeconds < 30 ? '⚡ Xuất sắc!' : matchSeconds < 60 ? '👍 Tốt lắm!' : '✅ Hoàn thành!';
+      document.getElementById('match-result-time').textContent = `Thời gian: ${m}:${s}`;
+      res.classList.add('show');
+    }
+  } else {
+    // wrong
+    a.classList.add('wrong-flash'); b.classList.add('wrong-flash');
+    setTimeout(() => {
+      a.classList.remove('selected','wrong-flash');
+      b.classList.remove('selected','wrong-flash');
+    }, 400);
+    matchSelected = null;
+  }
+}
+
+// ===== INIT =====
+renderKanaGrid();
+initFlashcards();
+initQuiz();
+startMatch();
+</script>
+</body>
+</html>
